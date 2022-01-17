@@ -46,7 +46,7 @@ void ViewInfoUpdater::UpdateRightInfo(QPainter* painter,
                                       int index) {
   painter->save();
   std::vector<PlayerUI> players_ui;
-  for (size_t i = 0; i < cars_data_.cars_data.size(); i++) {
+  for (size_t i = 0 ; i < cars_data_.cars_data.size() ; i++) {
     players_ui.emplace_back(cars_data_.GetHP(i),
                             cars_data_.GetCurrentOrderPosition(i),
                             i);
@@ -64,7 +64,7 @@ void ViewInfoUpdater::UpdateRightInfo(QPainter* painter,
               return p1.position < p2.position;
             });
   painter->translate(x_pos - 130, 10);
-  for (const auto& player: players_ui) {
+  for (const auto& player : players_ui) {
     if (player.number == static_cast<size_t>(index)) {
       painter->setBrush(QBrush(QColor(255, 200, 200)));
     } else {
@@ -200,7 +200,7 @@ void ViewInfoUpdater::UpdateAllInfoDescription(QPainter* painter,
   painter->scale(2. / scale, 2. / scale);
   scale = 2;
 
-  for (size_t i = 0; i < frames.size(); i++) {
+  for (size_t i = 0 ; i < frames.size() ; i++) {
     UpdateTopInfo(painter,
                   frames[i].left() / scale,
                   frames[i].top() / scale,

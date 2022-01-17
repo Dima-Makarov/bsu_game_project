@@ -40,7 +40,7 @@ void GameController::AddCar(Vec2f position,
 }
 
 void GameController::SetUpBots() {
-  for (size_t i = 0; i < game_mode_->bots_amount; i++) {
+  for (size_t i = 0 ; i < game_mode_->bots_amount ; i++) {
     size_t id = game_mode_->players_amount + i;
     AddCar(map_.GetPosAndAngles()[id].first,
            map_.GetPosAndAngles()[id].second,
@@ -70,7 +70,7 @@ void GameController::SetUpCars(const InputController* input_controller) {
 
 void GameController::SetUpCarsAchievements() {
   car_achievements_.resize(cars_.size());
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     remaining_cars_.insert(i);
     if (i < game_mode_->players_amount) {
       remaining_players_.insert(i);
@@ -96,8 +96,8 @@ void GameController::Tick(int time_millis) {
 }
 
 void GameController::UpdateOrderPositions() {
-  for (const auto& first_car: remaining_cars_) {
-    for (const auto& second_car: remaining_cars_) {
+  for (const auto& first_car : remaining_cars_) {
+    for (const auto& second_car : remaining_cars_) {
       if (car_achievements_[first_car].current_order_position -
           car_achievements_[second_car].current_order_position != 1) {
         continue;
@@ -147,7 +147,7 @@ bool GameController::SwapOrderPositions(uint32_t first_car,
 void GameController::UpdateCarsInfoAndCollisions(int time_millis) {
   SetNoBonusIsApplied();
   bonus_is_applied_ = false;
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     map_.HandleCarTick(&cars_[i]);
     ChangingParameterForBonusSound(i);
     cars_[i].Tick(time_millis);
@@ -165,7 +165,7 @@ void GameController::UpdateCarsInfoAndCollisions(int time_millis) {
       remaining_players_.erase(i);
       if (remaining_cars_.find(i) != remaining_cars_.end()) {
         remaining_cars_.erase(i);
-        for (auto current_car: remaining_cars_) {
+        for (auto current_car : remaining_cars_) {
           if (car_achievements_[current_car].current_order_position >
               car_achievements_[i].current_order_position) {
             car_achievements_[current_car].current_order_position--;
@@ -190,7 +190,7 @@ void GameController::UpdateCarAchievements(uint32_t index, const Car& car) {
 }
 
 void GameController::RecalculateDeviations() {
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     if (!car_achievements_[i].is_collide_with_finish) {
       car_achievements_[i].finish_deviation =
           physics::CalculateLineDeviation(
@@ -202,8 +202,8 @@ void GameController::RecalculateDeviations() {
 }
 
 void GameController::ProceedCollisionsWithCars() {
-  for (size_t i = 0; i < cars_.size(); i++) {
-    for (size_t j = 0; j < cars_.size(); j++) {
+  for (size_t i = 0 ; i < cars_.size() ; i++) {
+    for (size_t j = 0 ; j < cars_.size() ; j++) {
       if (i == j) {
         continue;
       }
@@ -218,7 +218,7 @@ void GameController::ProceedCollisionsWithCars() {
 }
 
 void GameController::ProceedCollisionsWithFinish() {
-  for (auto i: remaining_cars_) {
+  for (auto i : remaining_cars_) {
     if (physics::IsIntersects(
         cars_[i].GetCollisionLines(), {finish_line_})) {
       car_achievements_[i].is_collide_with_finish = true;
@@ -254,7 +254,7 @@ void GameController::ProceedCollisionsWithFinish() {
 
 void GameController::ProceedFinishGame() {
   std::vector<uint32_t> deleted_cars;
-  for (auto i: remaining_cars_) {
+  for (auto i : remaining_cars_) {
     if (car_achievements_[i].laps_counter > game_mode_->laps_amount) {
       car_achievements_[i].finish_position = next_position_to_finish_++;
       car_achievements_[i].is_finished = true;
@@ -262,7 +262,7 @@ void GameController::ProceedFinishGame() {
       deleted_cars.push_back(i);
     }
   }
-  for (auto i: deleted_cars) {
+  for (auto i : deleted_cars) {
     remaining_cars_.erase(i);
     remaining_players_.erase(i);
   }
@@ -302,7 +302,7 @@ std::vector<WrapperBase<GameObject>*> GameController::GetGameObjects() const {
 
 std::vector<Vec2f> GameController::GetPlayersCarPositions() const {
   std::vector<Vec2f> result;
-  for (size_t i = 0; i < game_mode_->players_amount; i++) {
+  for (size_t i = 0 ; i < game_mode_->players_amount ; i++) {
     result.push_back(cars_[i].GetPosition());
   }
   return result;
@@ -321,7 +321,7 @@ void GameController::EnableWeapons() {
 }
 
 void GameController::UpdateAnimations() {
-  for (auto& animation: animations_) {
+  for (auto& animation : animations_) {
     animation.GoToNextFrame();
   }
   animations_.erase(std::remove_if(animations_.begin(), animations_.end(),
@@ -335,7 +335,7 @@ GameController::GetParametersForEngineSound() const {
   std::vector<EngineParameters> parameters_of_cars;
   parameters_of_cars.reserve(cars_.size());
 
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     std::pair<double, Motion> parameters =
         cars_[i].GetParametersForEngineSound();
     parameters_of_cars.push_back(
@@ -349,7 +349,7 @@ GameController::GetParametersForDriftSound() const {
   std::vector<DriftParameters> parameters_of_cars;
   parameters_of_cars.reserve(cars_.size());
 
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     parameters_of_cars.push_back({cars_[i].GetParameterForDriftSound(),
                                   game_mode_->enable_drifting,
                                   volume_parameters_[i]});
@@ -362,7 +362,7 @@ GameController::GetParametersForBrakeSound() const {
   std::vector<BrakeParameters> parameters_of_cars;
   parameters_of_cars.reserve(cars_.size());
 
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     parameters_of_cars.push_back({cars_[i].GetParameterForBrakeSound(),
                                   volume_parameters_[i]});
   }
@@ -392,7 +392,7 @@ GameController::GetParametersForShootingSound() const {
   std::vector<ShootingParameters> parameters_of_cars;
   parameters_of_cars.reserve(cars_.size());
 
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     bool bullets = true;
     if (cars_[i].GetBulletsAmount() <= 0) {
       bullets = false;
@@ -458,12 +458,12 @@ double GameController::GetDistance(uint32_t i, uint32_t j) const {
 void GameController::UpdateVolumeParameters(std::vector<double>* result) {
   std::vector<double> volume_parameters;
   volume_parameters.reserve(cars_.size());
-  for (uint32_t i = 0; i < cars_.size(); i++) {
+  for (uint32_t i = 0 ; i < cars_.size() ; i++) {
     double volume_parameter = 0.0f;
     double max_volume_parameter = 0.0f;
     uint32_t first_index = 0;
-    for (uint32_t j = first_index;
-         j < first_index + game_mode_->players_amount; j++) {
+    for (uint32_t j = first_index ;
+         j < first_index + game_mode_->players_amount ; j++) {
       double distance = GetDistance(i, j);
       if (distance > 150.0f) {
         volume_parameter = 0.0f;
