@@ -41,7 +41,6 @@ class Map : public QObject {
   void ProceedActiveBonuses(Car* car);
   void ProceedNewBonuses();
   void ProceedCollisions(Car*);
-  void ProceedNewBonusFromNetwork();
 
   static void HandleCarCrashIntoBorder(Car* car, const Vec2f& point);
 

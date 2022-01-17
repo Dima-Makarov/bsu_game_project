@@ -13,13 +13,6 @@ Map::Map(GameMode* game_mode) :
       QRandomGenerator::global()->bounded(kMaxMilliSecondsForNewBonus)
           + kMinMilliSecondForNewBonus);
   finish_line_ = parser.GetFinishLine();
-  if (game_mode->network_controller != nullptr
-      && game_mode->network_controller->GetId() != 0) {
-    connect(game_mode->network_controller,
-            &NetworkController::GotNewBonusData,
-            this,
-            &Map::ProceedNewBonusFromNetwork);
-  }
 }
 
 void Map::HandleCarTick(Car* car) {
@@ -65,10 +58,6 @@ void Map::ProceedCollisions(Car* car) {
 }
 
 void Map::ProceedNewBonuses() {
-  NetworkController* network = game_mode_->network_controller;
-  if (network != nullptr && network->GetId() != 0) {
-    return;
-  }
   if (bonuses_.size() < kMaxBonusesAmount && !bonus_timer_.isActive()) {
     int position_index = QRandomGenerator::global()->
         bounded(static_cast<int>(waypoints_.size()));
@@ -89,9 +78,6 @@ void Map::ProceedNewBonuses() {
     bonus_timer_.start(
         QRandomGenerator::global()->bounded(kMaxMilliSecondsForNewBonus)
             + kMinMilliSecondForNewBonus);
-    if (network != nullptr) {
-      network->SendNewBonusData(rand_point, static_cast<int>(type));
-    }
   }
 }
 
@@ -151,15 +137,6 @@ uint32_t Map::GetNearestWaypointIndex(const Vec2f& point) const {
     }
   }
   return result_index;
-}
-
-void Map::ProceedNewBonusFromNetwork() {
-  QString json = game_mode_->network_controller->GetData().toString();
-  QJsonObject json_object = QJsonDocument::fromJson(json.toUtf8()).object();
-  Vec2f position(json_object["x"].toDouble(),
-                 json_object["y"].toDouble());
-  BonusTypes type = static_cast<BonusTypes>(json_object["type"].toInt());
-  bonuses_.emplace_back(position, type);
 }
 
 void Map::SetNoBonusIsApplied() {

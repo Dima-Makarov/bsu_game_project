@@ -41,38 +41,38 @@ void ImageSelector::InitializeImages(const QFileInfoList& images_list) {
 
 void ImageSelector::SwitchLeft() {
   if (player_number_ == 1) {
-    if (game_mode_->first_player_car_number == 0) {
-      game_mode_->first_player_car_number = number_of_images_ - 1;
+    if (game_mode_->first_player_car_color == 0) {
+      game_mode_->first_player_car_color = number_of_images_ - 1;
     } else {
-      game_mode_->first_player_car_number--;
+      game_mode_->first_player_car_color--;
     }
-    image_widget_->setCurrentIndex(game_mode_->first_player_car_number);
+    image_widget_->setCurrentIndex(game_mode_->first_player_car_color);
   } else {
-    if (game_mode_->second_player_car_number == 0) {
-      game_mode_->second_player_car_number = number_of_images_ - 1;
+    if (game_mode_->second_player_car_color == 0) {
+      game_mode_->second_player_car_color = number_of_images_ - 1;
     } else {
-      game_mode_->second_player_car_number--;
+      game_mode_->second_player_car_color--;
     }
-    image_widget_->setCurrentIndex(game_mode_->second_player_car_number);
+    image_widget_->setCurrentIndex(game_mode_->second_player_car_color);
   }
   repaint();
 }
 
 void ImageSelector::SwitchRight() {
   if (player_number_ == 1) {
-    if (game_mode_->first_player_car_number >= number_of_images_ - 1) {
-      game_mode_->first_player_car_number = 0;
+    if (game_mode_->first_player_car_color >= number_of_images_ - 1) {
+      game_mode_->first_player_car_color = 0;
     } else {
-      game_mode_->first_player_car_number++;
+      game_mode_->first_player_car_color++;
     }
-    image_widget_->setCurrentIndex(game_mode_->first_player_car_number);
+    image_widget_->setCurrentIndex(game_mode_->first_player_car_color);
   } else {
-    if (game_mode_->second_player_car_number >= number_of_images_ - 1) {
-      game_mode_->second_player_car_number = 0;
+    if (game_mode_->second_player_car_color >= number_of_images_ - 1) {
+      game_mode_->second_player_car_color = 0;
     } else {
-      game_mode_->second_player_car_number++;
+      game_mode_->second_player_car_color++;
     }
-    image_widget_->setCurrentIndex(game_mode_->second_player_car_number);
+    image_widget_->setCurrentIndex(game_mode_->second_player_car_color);
   }
   repaint();
 }

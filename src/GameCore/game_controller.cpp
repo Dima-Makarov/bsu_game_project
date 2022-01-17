@@ -6,24 +6,10 @@ GameController::GameController(GameMode* game_mode,
     map_(game_mode),
     finish_line_(map_.GetFinishLine()),
     game_mode_(game_mode),
-    weapon_handler_(),
-    network_controller_(game_mode_->network_controller) {
-  cars_.reserve(game_mode_->network_players_amount
-                    + game_mode_->players_amount
+    weapon_handler_() {
+  cars_.reserve(game_mode_->players_amount
                     + game_mode_->bots_amount);
-  if (network_controller_) {
-    network_controller_->SetAlreadyStarted(true);
-    if (network_controller_->GetId() == 0) {
-      network_controller_->SendStartSignal(JsonHelper::EncodeGameModeJson(
-          game_mode->map_index,
-          game_mode->bots_amount,
-          game_mode->laps_amount,
-          game_mode->enable_drifting));
-    }
-    SetUpCarsNetwork(input_controller);
-  } else {
-    SetUpCars(input_controller);
-  }
+  SetUpCars(input_controller);
   SetUpBots();
   SetUpCarsAchievements();
   weapons_timer_.setSingleShot(true);
@@ -57,8 +43,7 @@ void GameController::SetUpBots() {
   std::set<CarsColors> colors_set = SetBotsColors();
   for (size_t i = 0; i < game_mode_->bots_amount; i++) {
     size_t id =
-        game_mode_->players_amount +
-            game_mode_->network_players_amount + i;
+        game_mode_->players_amount + i;
     AddCar(map_.GetPosAndAngles()[id].first,
            map_.GetPosAndAngles()[id].second,
            new BotBehavior(map_.GetBorders(),
@@ -75,56 +60,28 @@ void GameController::SetUpBots() {
 
 std::set<CarsColors> GameController::SetBotsColors() const {
   std::set<CarsColors> colors_set;
-  for (size_t i = 0; i < game_mode_->players_amount +
-      game_mode_->network_players_amount +
-      game_mode_->bots_amount; i++) {
+  for (size_t i = 0; i < game_mode_->players_amount + game_mode_->bots_amount; i++) {
     colors_set.insert(static_cast<CarsColors>(i));
   }
   colors_set.erase(static_cast<CarsColors>(
-                       game_mode_->first_player_car_number));
+                       game_mode_->first_player_car_color));
   if (game_mode_->players_amount > 1) {
     colors_set.erase(static_cast<CarsColors>(
-                         game_mode_->second_player_car_number));
+                         game_mode_->second_player_car_color));
   }
   return colors_set;
-}
-
-void GameController::SetUpCarsNetwork(const InputController* input_controller) {
-  size_t player_position = network_controller_->GetId();
-  for (size_t i = 0; i < player_position; i++) {
-    AddCar(map_.GetPosAndAngles()[i].first,
-           map_.GetPosAndAngles()[i].second,
-           new NetworkPlayerBehavior(network_controller_, i),
-           static_cast<CarsColors>(i));
-  }
-  Behavior* first_player_behavior =
-      new FirstPlayerBehavior(input_controller);
-  AddCar(map_.GetPosAndAngles()[player_position].first,
-         map_.GetPosAndAngles()[player_position].second,
-         first_player_behavior,
-         static_cast<CarsColors>(player_position));
-  client_car_data_sender_ = new ClientCarDataSender(&cars_.back(),
-                                                    network_controller_,
-                                                    first_player_behavior);
-  for (size_t i = player_position + 1;
-       i < game_mode_->network_players_amount + 1; i++) {
-    AddCar(map_.GetPosAndAngles()[i].first,
-           map_.GetPosAndAngles()[i].second,
-           new NetworkPlayerBehavior(network_controller_, i),
-           static_cast<CarsColors>(i));
-  }
 }
 
 void GameController::SetUpCars(const InputController* input_controller) {
   AddCar(map_.GetPosAndAngles()[0].first,
          map_.GetPosAndAngles()[0].second,
          new FirstPlayerBehavior(input_controller),
-         static_cast<CarsColors>(game_mode_->first_player_car_number));
+         static_cast<CarsColors>(game_mode_->first_player_car_color));
   if (game_mode_->players_amount > 1) {
     AddCar(map_.GetPosAndAngles()[1].first,
            map_.GetPosAndAngles()[1].second,
            new SecondPlayerBehavior(input_controller),
-           static_cast<CarsColors>(game_mode_->second_player_car_number));
+           static_cast<CarsColors>(game_mode_->second_player_car_color));
   }
 }
 
@@ -132,8 +89,7 @@ void GameController::SetUpCarsAchievements() {
   car_achievements_.resize(cars_.size());
   for (uint32_t i = 0; i < cars_.size(); i++) {
     remaining_cars_.insert(i);
-    if (i <
-        game_mode_->players_amount + game_mode_->network_players_amount) {
+    if (i < game_mode_->players_amount) {
       remaining_players_.insert(i);
     }
     car_achievements_[i].car_number = cars_[i].GetColor();
@@ -157,8 +113,8 @@ void GameController::Tick(int time_millis) {
 }
 
 void GameController::UpdateOrderPositions() {
-  for (const auto& first_car : remaining_cars_) {
-    for (const auto& second_car : remaining_cars_) {
+  for (const auto& first_car: remaining_cars_) {
+    for (const auto& second_car: remaining_cars_) {
       if (car_achievements_[first_car].current_order_position -
           car_achievements_[second_car].current_order_position != 1) {
         continue;
@@ -226,7 +182,7 @@ void GameController::UpdateCarsInfoAndCollisions(int time_millis) {
       remaining_players_.erase(i);
       if (remaining_cars_.find(i) != remaining_cars_.end()) {
         remaining_cars_.erase(i);
-        for (auto current_car : remaining_cars_) {
+        for (auto current_car: remaining_cars_) {
           if (car_achievements_[current_car].current_order_position >
               car_achievements_[i].current_order_position) {
             car_achievements_[current_car].current_order_position--;
@@ -279,7 +235,7 @@ void GameController::ProceedCollisionsWithCars() {
 }
 
 void GameController::ProceedCollisionsWithFinish() {
-  for (auto i : remaining_cars_) {
+  for (auto i: remaining_cars_) {
     if (physics::IsIntersects(
         cars_[i].GetCollisionLines(), {finish_line_})) {
       car_achievements_[i].is_collide_with_finish = true;
@@ -315,7 +271,7 @@ void GameController::ProceedCollisionsWithFinish() {
 
 void GameController::ProceedFinishGame() {
   std::vector<uint32_t> deleted_cars;
-  for (auto i : remaining_cars_) {
+  for (auto i: remaining_cars_) {
     if (car_achievements_[i].laps_counter > game_mode_->laps_amount) {
       car_achievements_[i].finish_position = next_position_to_finish_++;
       car_achievements_[i].is_finished = true;
@@ -323,7 +279,7 @@ void GameController::ProceedFinishGame() {
       deleted_cars.push_back(i);
     }
   }
-  for (auto i : deleted_cars) {
+  for (auto i: deleted_cars) {
     remaining_cars_.erase(i);
     remaining_players_.erase(i);
   }
@@ -363,12 +319,8 @@ std::vector<WrapperBase<GameObject>*> GameController::GetGameObjects() const {
 
 std::vector<Vec2f> GameController::GetPlayersCarPositions() const {
   std::vector<Vec2f> result;
-  if (network_controller_) {
-    result.push_back(cars_[network_controller_->GetId()].GetPosition());
-  } else {
-    for (size_t i = 0; i < game_mode_->players_amount; i++) {
-      result.push_back(cars_[i].GetPosition());
-    }
+  for (size_t i = 0; i < game_mode_->players_amount; i++) {
+    result.push_back(cars_[i].GetPosition());
   }
   return result;
 }
@@ -386,7 +338,7 @@ void GameController::EnableWeapons() {
 }
 
 void GameController::UpdateAnimations() {
-  for (auto& animation : animations_) {
+  for (auto& animation: animations_) {
     animation.GoToNextFrame();
   }
   animations_.erase(std::remove_if(animations_.begin(), animations_.end(),
@@ -447,10 +399,8 @@ bool GameController::BonusOfPlayersIsApplied() const {
 }
 
 void GameController::ChangingParameterForBonusSound(uint32_t i) {
-  if (game_mode_->network_controller == nullptr) {
-    if (i < game_mode_->players_amount && BonusIsApplied()) {
-      bonus_is_applied_ = true;
-    }
+  if (i < game_mode_->players_amount && BonusIsApplied()) {
+    bonus_is_applied_ = true;
   }
 }
 
@@ -529,9 +479,6 @@ void GameController::UpdateVolumeParameters(std::vector<double>* result) {
     double volume_parameter = 0.0f;
     double max_volume_parameter = 0.0f;
     uint32_t first_index = 0;
-    if (game_mode_->network_controller != nullptr) {
-      first_index = game_mode_->network_controller->GetId();
-    }
     for (uint32_t j = first_index;
          j < first_index + game_mode_->players_amount; j++) {
       double distance = GetDistance(i, j);
@@ -552,6 +499,4 @@ void GameController::UpdateVolumeParameters(std::vector<double>* result) {
   (*result) = volume_parameters;
 }
 
-GameController::~GameController() {
-  delete client_car_data_sender_;
-}
+GameController::~GameController() = default;

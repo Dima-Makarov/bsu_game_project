@@ -53,7 +53,6 @@ set(SOURCES
         src/GameCore/Behaviors/second_player_behavior.cpp
         src/GameCore/Behaviors/bot_behavior.cpp
         src/GameCore/input_controller.cpp
-        src/GameCore/Behaviors/network_player_behavior.cpp
         src/EventsController/events_controller.cpp
         src/helpers/vec2f.cpp
         src/helpers/json_map_parser.cpp
@@ -61,16 +60,13 @@ set(SOURCES
         src/helpers/pixmap_loader.cpp
         src/helpers/map_data.cpp
         src/helpers/cars_data.cpp
-        src/helpers/client_car_data_sender.cpp
-        src/Network/network_player.cpp
-        src/Network/network_room.cpp
-        src/Network/player_tile.cpp
-        src/Network/network_controller.cpp
         src/View/Sounds/engine_sound.cpp
         src/View/Sounds/drift_sound.cpp
         src/View/Sounds/brake_sound.cpp
         src/View/Sounds/shooting_sound.cpp
-        src/View/Sounds/sounds_of_effects.cpp src/View/Sounds/sound.cpp src/View/Sounds/sound.h)
+        src/View/Sounds/sounds_of_effects.cpp
+        src/View/Sounds/sound.cpp
+        src/View/Sounds/sound.h)
 
 set(RESOURCES
         explosion_animation.qrc
@@ -82,13 +78,5 @@ set(RESOURCES
         sounds.qrc
         other_images.qrc)
 
-set(SERVER_SOURCES
-        src/Server/main.cpp
-        src/Server/server_controller.cpp
-        src/Network/network_player.cpp
-        src/helpers/vec2f.cpp)
-
 add_executable(${PROJECT_NAME} ${SOURCES} ${RESOURCES})
-add_executable(Death_Rally_Server ${SERVER_SOURCES})
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
-target_link_libraries(Death_Rally_Server ${REQUIRED_LIBS_QUALIFIED})

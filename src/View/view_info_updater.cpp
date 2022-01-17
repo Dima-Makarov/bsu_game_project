@@ -6,8 +6,7 @@ ViewInfoUpdater::ViewInfoUpdater(QWidget* parent,
     start_label_(new QLabel("Get ready!", parent)),
     layout_(new QVBoxLayout(parent)),
     laps_amount_(game_mode_->laps_amount),
-    players_amount_(game_mode_->players_amount + game_mode_->bots_amount +
-        game_mode_->network_players_amount),
+    players_amount_(game_mode_->players_amount + game_mode_->bots_amount),
     hp_(":resources/images/other_stuff/hp.png"),
     bullets_(":resources/images/other_stuff/ammo.png"),
     mines_(":resources/images/other_stuff/mines_ammo.png") {
@@ -18,9 +17,6 @@ ViewInfoUpdater::ViewInfoUpdater(QWidget* parent,
                               "color: #ff0000;"
                               "font: bold 60px; }");
   layout_->addWidget(start_label_);
-  if (game_mode_->network_controller != nullptr) {
-    network_id_ = game_mode_->network_controller->GetId();
-  }
 }
 
 void ViewInfoUpdater::Repaint(QPainter* painter,
@@ -68,7 +64,7 @@ void ViewInfoUpdater::UpdateRightInfo(QPainter* painter,
               return p1.position < p2.position;
             });
   painter->translate(x_pos - 130, 10);
-  for (const auto& player : players_ui) {
+  for (const auto& player: players_ui) {
     if (player.number == static_cast<size_t>(index)) {
       painter->setBrush(QBrush(QColor(255, 200, 200)));
     } else {
@@ -203,34 +199,20 @@ void ViewInfoUpdater::UpdateAllInfoDescription(QPainter* painter,
                                                double scale) {
   painter->scale(2. / scale, 2. / scale);
   scale = 2;
-  if (game_mode_->network_controller != nullptr) {
+
+  for (size_t i = 0; i < frames.size(); i++) {
     UpdateTopInfo(painter,
-                  frames[0].left() / scale,
-                  frames[0].top() / scale,
-                  network_id_);
+                  frames[i].left() / scale,
+                  frames[i].top() / scale,
+                  i);
     UpdateBottomInfo(painter,
-                     frames[0].left() / scale,
-                     frames[0].bottom() / scale,
-                     network_id_);
+                     frames[i].left() / scale,
+                     frames[i].bottom() / scale,
+                     i);
     UpdateRightInfo(painter,
-                    frames[0].right() / scale,
-                    frames[0].bottom() / scale,
-                    network_id_);
-  } else {
-    for (size_t i = 0; i < frames.size(); i++) {
-      UpdateTopInfo(painter,
-                    frames[i].left() / scale,
-                    frames[i].top() / scale,
+                    frames[i].right() / scale,
+                    frames[i].bottom() / scale,
                     i);
-      UpdateBottomInfo(painter,
-                       frames[i].left() / scale,
-                       frames[i].bottom() / scale,
-                       i);
-      UpdateRightInfo(painter,
-                      frames[i].right() / scale,
-                      frames[i].bottom() / scale,
-                      i);
-    }
   }
 }
 
