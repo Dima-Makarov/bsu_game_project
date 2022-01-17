@@ -1,5 +1,4 @@
 #include "game_mode_selector.h"
-#include "src/helpers/sizes.h"
 
 GameModeSelector::GameModeSelector(QWidget* parent, GameMode* game_mode) :
     QWidget(parent),
@@ -10,10 +9,6 @@ GameModeSelector::GameModeSelector(QWidget* parent, GameMode* game_mode) :
     main_layout_(new QVBoxLayout(this)),
     picture_layout_(new QHBoxLayout),
     cars_choose_layout_(new QVBoxLayout),
-    first_player_label_(new QLabel("Choose first player's car:", this)),
-    second_player_label_(new QLabel("Choose second player's car:", this)),
-    first_player_info_layout_(new QHBoxLayout),
-    second_player_info_layout_(new QHBoxLayout),
     players_label_(new QLabel("Choose number of players: ", this)),
     laps_label_(new QLabel("Choose number of laps: ", this)),
     bots_label_(new QLabel("Choose number of bots: ", this)),
@@ -25,8 +20,6 @@ GameModeSelector::GameModeSelector(QWidget* parent, GameMode* game_mode) :
     buttons_layout_(new QHBoxLayout),
     map_stacked_widget_(new QStackedWidget(this)),
     game_mode_(game_mode),
-    first_car_selector_(new ImageSelector(this, game_mode_, 1)),
-    second_car_selector_(new ImageSelector(this, game_mode_, 2)),
     number_of_players_(new QComboBox(this)),
     number_of_laps_(new QComboBox(this)),
     number_of_bots_(new QComboBox(this)) {
@@ -41,16 +34,10 @@ void GameModeSelector::SetSingleplayer(bool new_state) {
   if (singleplayer_layouts_added_ && !new_state) {
     players_label_->hide();
     number_of_players_->hide();
-    first_car_selector_->hide();
-    first_player_label_->hide();
-    second_car_selector_->hide();
-    second_player_label_->hide();
     singleplayer_layouts_added_ = false;
   } else if (!singleplayer_layouts_added_ && new_state) {
     players_label_->show();
     number_of_players_->show();
-    first_car_selector_->show();
-    first_player_label_->show();
     singleplayer_layouts_added_ = true;
   }
 }
@@ -73,11 +60,7 @@ void GameModeSelector::InitializeImages() {
   map_stacked_widget_->setStyleSheet(styles::kMapWidgetStyle);
   QFileInfoList standard_cars_list =
       QDir(":resources/images/cars/cars_icons").entryInfoList();
-  first_car_selector_->InitializeImages(standard_cars_list);
-  second_car_selector_->InitializeImages(standard_cars_list);
   map_stacked_widget_->setCurrentIndex(0);
-  second_car_selector_->hide();
-  second_player_label_->hide();
 }
 
 void GameModeSelector::SetStyles() {
@@ -145,18 +128,6 @@ void GameModeSelector::ApplySettings() {
   game_mode_->enable_drifting = enable_drifts_->isChecked();
 }
 
-void GameModeSelector::ApplyPlayersSettings() {
-  if (cars_choose_layout_->count() == 1) {
-    cars_choose_layout_->addLayout(second_player_info_layout_);
-    second_player_label_->show();
-    second_car_selector_->show();
-  } else {
-    cars_choose_layout_->removeItem(second_player_info_layout_);
-    second_player_label_->hide();
-    second_car_selector_->hide();
-  }
-}
-
 void GameModeSelector::SetUpLayouts() {
   main_layout_->addStretch(10);
   main_layout_->addLayout(picture_layout_);
@@ -169,17 +140,6 @@ void GameModeSelector::SetUpLayouts() {
   picture_layout_->addWidget(left_, 1, Qt::AlignCenter);
   picture_layout_->addStretch(1);
   picture_layout_->addWidget(right_, 1, Qt::AlignCenter);
-  cars_choose_layout_->addLayout(first_player_info_layout_);
-  first_player_info_layout_->addStretch(3);
-  first_player_info_layout_->addWidget(first_player_label_, 1, Qt::AlignCenter);
-  first_player_info_layout_->addWidget(first_car_selector_, 1, Qt::AlignCenter);
-  first_player_info_layout_->addStretch(3);
-  second_player_info_layout_->addStretch(3);
-  second_player_info_layout_->addWidget(second_player_label_, 1,
-                                        Qt::AlignCenter);
-  second_player_info_layout_->addWidget(second_car_selector_, 1,
-                                        Qt::AlignCenter);
-  second_player_info_layout_->addStretch(3);
   players_layout_->addStretch(2);
   players_layout_->addWidget(players_label_, 1, Qt::AlignCenter);
   players_layout_->addWidget(number_of_players_, 1, Qt::AlignCenter);
@@ -221,10 +181,6 @@ void GameModeSelector::ConnectUI() {
           QOverload<int>::of(&QComboBox::currentIndexChanged),
           this,
           &GameModeSelector::ApplySettings);
-  connect(number_of_players_,
-          QOverload<int>::of(&QComboBox::currentIndexChanged),
-          this,
-          &GameModeSelector::ApplyPlayersSettings);
   connect(number_of_laps_,
           QOverload<int>::of(&QComboBox::currentIndexChanged),
           this,

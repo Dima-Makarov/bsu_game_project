@@ -35,7 +35,6 @@ set(SOURCES
         src/Menu/map_selector_tile.cpp
         src/Menu/image_selector_tile.cpp
         src/Menu/end_game_stats.cpp
-        src/Menu/image_selector.cpp
         src/Menu/credits.cpp
         src/View/view.cpp
         src/View/view_info_updater.cpp

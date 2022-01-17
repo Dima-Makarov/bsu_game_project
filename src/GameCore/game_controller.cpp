@@ -40,10 +40,8 @@ void GameController::AddCar(Vec2f position,
 }
 
 void GameController::SetUpBots() {
-  std::set<CarsColors> colors_set = SetBotsColors();
   for (size_t i = 0; i < game_mode_->bots_amount; i++) {
-    size_t id =
-        game_mode_->players_amount + i;
+    size_t id = game_mode_->players_amount + i;
     AddCar(map_.GetPosAndAngles()[id].first,
            map_.GetPosAndAngles()[id].second,
            new BotBehavior(map_.GetBorders(),
@@ -53,35 +51,20 @@ void GameController::SetUpBots() {
                            car_achievements_,
                            id,
                            game_mode_),
-           static_cast<CarsColors>(*colors_set.begin()));
-    colors_set.erase(colors_set.begin());
+           static_cast<CarsColors>(i + game_mode_->players_amount));
   }
-}
-
-std::set<CarsColors> GameController::SetBotsColors() const {
-  std::set<CarsColors> colors_set;
-  for (size_t i = 0; i < game_mode_->players_amount + game_mode_->bots_amount; i++) {
-    colors_set.insert(static_cast<CarsColors>(i));
-  }
-  colors_set.erase(static_cast<CarsColors>(
-                       game_mode_->first_player_car_color));
-  if (game_mode_->players_amount > 1) {
-    colors_set.erase(static_cast<CarsColors>(
-                         game_mode_->second_player_car_color));
-  }
-  return colors_set;
 }
 
 void GameController::SetUpCars(const InputController* input_controller) {
   AddCar(map_.GetPosAndAngles()[0].first,
          map_.GetPosAndAngles()[0].second,
          new FirstPlayerBehavior(input_controller),
-         static_cast<CarsColors>(game_mode_->first_player_car_color));
+         static_cast<CarsColors>(0));
   if (game_mode_->players_amount > 1) {
     AddCar(map_.GetPosAndAngles()[1].first,
            map_.GetPosAndAngles()[1].second,
            new SecondPlayerBehavior(input_controller),
-           static_cast<CarsColors>(game_mode_->second_player_car_color));
+           static_cast<CarsColors>(1));
   }
 }
 

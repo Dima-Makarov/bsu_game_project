@@ -8,7 +8,6 @@
 #include <QCheckBox>
 
 #include "map_selector_tile.h"
-#include "image_selector.h"
 #include "src/helpers/map_data.h"
 #include "src/helpers/game_mode.h"
 #include "src/helpers/fonts.h"
@@ -39,7 +38,6 @@ class GameModeSelector : public QWidget {
   void SwitchMapRight();
   void SwitchMapLeft();
   void ApplySettings();
-  void ApplyPlayersSettings();
 
   QPushButton* start_game_;
   QPushButton* back_to_main_menu_;
@@ -48,10 +46,6 @@ class GameModeSelector : public QWidget {
   QVBoxLayout* main_layout_;
   QHBoxLayout* picture_layout_;
   QVBoxLayout* cars_choose_layout_;
-  QLabel* first_player_label_;
-  QLabel* second_player_label_;
-  QHBoxLayout* first_player_info_layout_;
-  QHBoxLayout* second_player_info_layout_;
   QLabel* players_label_;
   QLabel* laps_label_;
   QLabel* bots_label_;
@@ -63,8 +57,6 @@ class GameModeSelector : public QWidget {
   QHBoxLayout* buttons_layout_;
   QStackedWidget* map_stacked_widget_;
   GameMode* game_mode_ = nullptr;
-  ImageSelector* first_car_selector_;
-  ImageSelector* second_car_selector_;
   QComboBox* number_of_players_ = nullptr;
   QComboBox* number_of_laps_ = nullptr;
   QComboBox* number_of_bots_ = nullptr;
