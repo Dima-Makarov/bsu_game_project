@@ -8,7 +8,6 @@ MainWindow::MainWindow(QMainWindow* parent) :
     game_mode_(new GameMode()),
     game_mode_selector_(new GameModeSelector(this, game_mode_)),
     settings_(new Settings(game_mode_, this)),
-    network_room_(new NetworkRoom(this, game_mode_)),
     credits_(new Credits(this)) {
   setMinimumSize(mainwindow_sizes::kDefaultScreenSize);
   setWindowTitle("Survival Rally: Big Guns");
@@ -70,9 +69,6 @@ void MainWindow::ReturnToMainMenu() {
              &MainWindow::ReturnToMainMenu);
   delete events_controller_;
   events_controller_ = nullptr;
-  if (game_mode_->network_controller != nullptr) {
-    game_mode_->network_controller->SetAlreadyStarted(false);
-  }
 }
 
 void MainWindow::OpenGameModeSelector() {
@@ -83,27 +79,14 @@ void MainWindow::CloseMapSelector() {
   stacked_widget_->setCurrentWidget(menu_);
 }
 
-void MainWindow::OpenNetworkRoom() {
-  stacked_widget_->setCurrentWidget(network_room_);
-}
-
-void MainWindow::CloseNetworkRoom() {
-  stacked_widget_->setCurrentWidget(menu_);
-}
-
 void MainWindow::SingleplayerStarted() {
   game_mode_selector_->SetSingleplayer(true);
-}
-
-void MainWindow::MultiplayerStarted() {
-  game_mode_selector_->SetSingleplayer(false);
 }
 
 void MainWindow::SetUpStackedWidget() {
   stacked_widget_->addWidget(menu_);
   stacked_widget_->addWidget(game_mode_selector_);
   stacked_widget_->addWidget(settings_);
-  stacked_widget_->addWidget(network_room_);
   stacked_widget_->addWidget(credits_);
   stacked_widget_->setCurrentWidget(menu_);
 }
@@ -114,17 +97,9 @@ void MainWindow::ConnectUI() {
           this,
           &MainWindow::SingleplayerStarted);
   connect(menu_,
-          &Menu::MultiPlayerPressed,
-          this,
-          &MainWindow::MultiplayerStarted);
-  connect(menu_,
           &Menu::SinglePlayerPressed,
           this,
           &MainWindow::OpenGameModeSelector);
-  connect(menu_,
-          &Menu::MultiPlayerPressed,
-          this,
-          &MainWindow::OpenNetworkRoom);
   connect(menu_,
           &Menu::CreditsButtonPressed,
           this,
@@ -141,22 +116,6 @@ void MainWindow::ConnectUI() {
           &GameModeSelector::ReturnToMainMenu,
           this,
           &MainWindow::CloseMapSelector);
-  connect(network_room_,
-          &NetworkRoom::ReturnToMainMenu,
-          this,
-          &MainWindow::CloseNetworkRoom);
-  connect(network_room_,
-          &NetworkRoom::StartGame,
-          this,
-          &MainWindow::StartGame);
-  connect(network_room_,
-          &NetworkRoom::OpenGameModeSelector,
-          this,
-          &MainWindow::OpenGameModeSelector);
-  connect(network_room_,
-          &NetworkRoom::ExitDisconnected,
-          this,
-          &MainWindow::ReturnToMainMenu);
   connect(menu_,
           &Menu::SettingsButtonPressed,
           this,

@@ -19,14 +19,11 @@
 #include "src/GameCore/Behaviors/first_player_behavior.h"
 #include "src/GameCore/Behaviors/second_player_behavior.h"
 #include "src/GameCore/Behaviors/bot_behavior.h"
-#include "src/GameCore/Behaviors/network_player_behavior.h"
 #include "input_controller.h"
 #include "src/helpers/wrapper_template.h"
 #include "src/helpers/cars_colors.h"
 #include "src/helpers/parameters_for_sounds.h"
 #include "src/GameCore/GameObjects/animation.h"
-#include "src/Network/network_controller.h"
-#include "src/helpers/client_car_data_sender.h"
 
 class GameController : public QObject {
   Q_OBJECT
@@ -60,7 +57,6 @@ class GameController : public QObject {
               Behavior* behavior,
               CarsColors car_color);
   void SetUpCars(const InputController* input_controller);
-  void SetUpCarsNetwork(const InputController* input_controller);
   void SetUpBots();
   void SetUpCarsAchievements();
   void SetNoBonusIsApplied();
@@ -78,7 +74,6 @@ class GameController : public QObject {
   void UpdateCarAchievements(uint32_t index, const Car& car);
   void EnableWeapons();
   static void CollideCars(Car* car_1, Car* car_2);
-  std::set<CarsColors> SetBotsColors() const;
   bool SwapOrderPositions(uint32_t first_car, uint32_t second_car);
 
   static constexpr double kVelocityDecrease = 0.5;
@@ -98,8 +93,6 @@ class GameController : public QObject {
   std::vector<WrapperBase<GameObject>*> game_objects_;
   std::vector<Animation> animations_;
   QTimer weapons_timer_;
-  NetworkController* network_controller_;
-  ClientCarDataSender* client_car_data_sender_ = nullptr;
   int32_t next_position_to_finish_ = 1;
 
   bool bonus_is_applied_ = false;

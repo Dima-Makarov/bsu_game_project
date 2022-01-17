@@ -10,7 +10,6 @@
 #include "src/Menu/game_mode_selector.h"
 #include "src/Menu/settings.h"
 #include "src/Menu/credits.h"
-#include "src/Network/network_room.h"
 
 class MainWindow : public QMainWindow {
   Q_OBJECT
@@ -23,7 +22,6 @@ class MainWindow : public QMainWindow {
   void resizeEvent(QResizeEvent*) override;
 
   void SingleplayerStarted();
-  void MultiplayerStarted();
 
   void SetUpStackedWidget();
   void ConnectUI();
@@ -34,9 +32,6 @@ class MainWindow : public QMainWindow {
 
   void OpenGameModeSelector();
   void CloseMapSelector();
-
-  void OpenNetworkRoom();
-  void CloseNetworkRoom();
 
   void ShowSettings();
   void HideSettings();
@@ -51,7 +46,6 @@ class MainWindow : public QMainWindow {
   GameMode* game_mode_ = nullptr;
   GameModeSelector* game_mode_selector_ = nullptr;
   Settings* settings_ = nullptr;
-  NetworkRoom* network_room_ = nullptr;
   Credits* credits_ = nullptr;
   QPixmap background_;
   bool is_game_in_main_menu_ = true;

@@ -4,7 +4,7 @@ Sound::Sound(QWidget* events_controller, GameMode* game_mode) :
     sounds_of_effects_(new Effects(events_controller)),
     game_mode_(game_mode),
     cars_amount_(
-        game_mode->players_amount + game_mode->network_players_amount +
+        game_mode->players_amount +
             game_mode->bots_amount) {
   engine_sounds_.reserve(cars_amount_);
   drift_sounds_.reserve(cars_amount_);
