@@ -11,10 +11,11 @@ MainWindow::MainWindow(QMainWindow* parent) :
     credits_(new Credits(this)) {
   setMinimumSize(mainwindow_sizes::kDefaultScreenSize);
   setWindowTitle("Survival Rally: Big Guns");
-  setWindowIcon(QIcon(":resources/images/other_stuff/icon0.png"));
+  setWindowIcon(QIcon(
+      "../resources/images/other_stuff/icon0.png"));
   SetUpStackedWidget();
   pause_menu_->Close();
-  background_.load(":resources/images/other_stuff/background.png");
+  background_.load("../resources/images/other_stuff/background.png");
   ConnectUI();
 }
 

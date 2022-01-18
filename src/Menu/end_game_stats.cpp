@@ -51,7 +51,7 @@ void EndGameStats::UpdateStats() {
             });
   for (int i = 0; i < static_cast<int>(cars_data_.cars_data.size()); i++) {
     std::string stats_string = CreateStatsString(i);
-    std::string image_path = ":resources/images/cars/cars_icons/car";
+    std::string image_path = "../resources/images/cars/cars_icons/car";
     image_path += std::to_string(cars_data_.GetNumber(i) + 1) + ".png";
     QString image_path_qt = QString::fromStdString(image_path);
     if (positions_layout_->count() > i) {

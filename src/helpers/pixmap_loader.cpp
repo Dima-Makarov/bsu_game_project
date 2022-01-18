@@ -1,4 +1,5 @@
 #include "pixmap_loader.h"
+#include <iostream>
 
 PixmapLoader::PixmapLoader(const QString& filepath) : map_filepath_(filepath) {
   InitPixmaps();
@@ -6,16 +7,21 @@ PixmapLoader::PixmapLoader(const QString& filepath) : map_filepath_(filepath) {
 
 void PixmapLoader::InitPixmaps() {
   QFileInfoList standard_cars_list =
-      QDir(":resources/images/cars/standard_cars").entryInfoList();
+      QDir("../resources/images/cars/standard_cars").entryInfoList();
   for (const auto& standard_car : standard_cars_list) {
-    cars_pixmaps_[CarStates::kStandard].emplace_back(
-        QPixmap(standard_car.filePath()));
+    if (!standard_car.isHidden()) {
+      cars_pixmaps_[CarStates::kStandard].emplace_back(
+          QPixmap(standard_car.filePath()));
+    }
   }
 
   QFileInfoList animations_folders_list =
-      QDir(":resources/images/images_for_animations").entryInfoList();
+      QDir("../resources/images/images_for_animations").entryInfoList();
   auto animation_type = static_cast<AnimationTypes>(0);
   for (const auto& folder : animations_folders_list) {
+    if (folder.isHidden()) {
+      continue;
+    }
     QFileInfoList animation_list = QDir(folder.filePath()).entryInfoList();
     for (const auto& animation_frame : animation_list) {
       animation_pixmaps_[animation_type].emplace_back(QPixmap(
@@ -24,8 +30,7 @@ void PixmapLoader::InitPixmaps() {
     animation_type =
         static_cast<AnimationTypes>(static_cast<int>(animation_type) + 1);
   }
-
-  QString basic_path = ":resources/images/";
+  QString basic_path = "../resources/images/";
   map_pixmap_ = QPixmap(map_filepath_);
 
   cars_pixmaps_[CarStates::kDead].emplace_back(
