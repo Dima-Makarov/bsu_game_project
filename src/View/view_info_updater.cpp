@@ -7,9 +7,9 @@ ViewInfoUpdater::ViewInfoUpdater(QWidget* parent,
     layout_(new QVBoxLayout(parent)),
     laps_amount_(game_mode_->laps_amount),
     players_amount_(game_mode_->players_amount + game_mode_->bots_amount),
-    hp_(":resources/images/other_stuff/hp.png"),
-    bullets_(":resources/images/other_stuff/ammo.png"),
-    mines_(":resources/images/other_stuff/mines_ammo.png") {
+    hp_("../resources/images/other_stuff/hp.png"),
+    bullets_("../resources/images/other_stuff/ammo.png"),
+    mines_("../resources/images/other_stuff/mines_ammo.png") {
   layout_->setAlignment(Qt::AlignCenter);
   start_label_->setAlignment(Qt::AlignCenter);
   start_label_->setFont(fonts::kStartInfoFont);

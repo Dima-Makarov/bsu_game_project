@@ -7,13 +7,6 @@ set(CMAKE_AUTOMOC ON) # Enable Qt MOC compiler
 set(CMAKE_AUTORCC ON) # Enable Qt resources compiler
 set(CMAKE_AUTOUIC ON) # Enable Qt UI compiler
 
-set(CMAKE_PREFIX_PATH "C:/Qt/5.15.2/mingw81_64/lib/cmake")
-
-if (NOT CMAKE_PREFIX_PATH)
-    message(WARNING "CMAKE_PREFIX_PATH is not defined, you may need to set it "
-            "(-DCMAKE_PREFIX_PATH=\"path/to/Qt/lib/cmake\")")
-endif ()
-
 set(QT_VERSION 5)
 set(REQUIRED_LIBS Core Widgets Multimedia Network)
 set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::Network)
@@ -67,15 +60,5 @@ set(SOURCES
         src/View/Sounds/sound.cpp
         src/View/Sounds/sound.h)
 
-set(RESOURCES
-        explosion_animation.qrc
-        fire_animation.qrc
-        shooting_animation.qrc
-        cars.qrc
-        maps.qrc
-        map_data.qrc
-        sounds.qrc
-        other_images.qrc)
-
-add_executable(${PROJECT_NAME} ${SOURCES} ${RESOURCES})
+add_executable(${PROJECT_NAME} ${SOURCES} sounds.qrc)
 target_link_libraries(${PROJECT_NAME} ${REQUIRED_LIBS_QUALIFIED})
