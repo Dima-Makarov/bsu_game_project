@@ -20,8 +20,8 @@ map_data::ImageFilePaths::ImageFilePaths() {
   QFileInfoList minimap_list =
       QDir("../resources/images/maps/minimaps").entryInfoList();
   for (const auto& file : minimap_list) {
-   if (!file.isHidden()) {
-     minimaps_file_paths.push_back(file.filePath());
-   }
+    if (!file.isHidden()) {
+      minimaps_file_paths.push_back(file.filePath());
+    }
   }
 }
